@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Screenshooting utility. Saves the screenshot to ~/pictures/screenshots/ and copies the screenshot to clipboard.
+
+file_path=~/pictures/screenshots/$(date "+%Y%m%d-%H%M%S").png
+
+if [ "$1" == "-s" ]; then
+        grim $file_path
+elif [ "$1" == "-r" ]; then
+	grim -g "$(slurp)" $file_path
+fi
+
+wl-copy < $file_path

@@ -1,0 +1,54 @@
+general {
+	markup = "pango"
+	colors = true
+	color_bad = "#ff0000"
+}
+
+order += "load"
+order += "memory"
+order += "cpu_temperature 4"
+order += "volume master"
+order += "wireless wlan0"
+order += "battery 0"
+order += "time"
+order += "tztime local"
+
+load {
+	format =			"<span color='#5294e2'>%1min   %5min   %15min</span>"
+}
+
+memory {
+	memory_used_method =		"memavailable"
+        format =			"%used"
+}
+
+cpu_temperature 4 {
+	format =			"<span color='#5294e2'>%degrees°C</span>"
+}
+
+volume master {
+        format =			"%volume"
+        format_muted =			"<span color='#707880'>muted</span>"
+        device =			"default"
+}
+
+wireless wlan0 {
+	format_up =			"<span color='#5294e2'>UP</span>"
+	format_down = 			"DOWN"
+}
+
+battery 0 {
+	last_full_capacity =		true
+	format =			"%percentage"
+	integer_battery_capacity =	true
+	low_threshold =			10
+	threshold_type =		percentage
+}
+
+time {
+        format =			"<span color='#5294e2'>%a %b %e</span>"
+}
+
+tztime local {
+	format =			"%k:%M"
+}

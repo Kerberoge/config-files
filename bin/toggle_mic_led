@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ $(cat "/sys/class/leds/platform::micmute/brightness") -eq 0 ]; then
+	echo 1 > "/sys/class/leds/platform::micmute/brightness"
+else
+	echo 0 > "/sys/class/leds/platform::micmute/brightness"
+fi
