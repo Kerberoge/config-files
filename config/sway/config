@@ -47,7 +47,12 @@
     bindsym XF86AudioRaiseVolume	exec pactl set-sink-volume @DEFAULT_SINK@ +5%
     bindsym XF86AudioLowerVolume	exec pactl set-sink-volume @DEFAULT_SINK@ -5%
     bindsym XF86AudioMute		exec pactl set-sink-mute @DEFAULT_SINK@ toggle
-    bindsym XF86AudioMicMute		exec pactl set-source-mute @DEFAULT_SOURCE@ toggle && sudo toggle_mic_led
+    bindsym XF86AudioMicMute		exec pactl set-source-mute @DEFAULT_SOURCE@ toggle \
+	&& bash -c \
+	"[[ $(cat "/sys/class/leds/platform::micmute/brightness") == 0 ]] \
+	&& brightnessctl --device 'platform::micmute' set 1 \
+	|| brightnessctl --device 'platform::micmute' set 0"
+
     bindsym XF86AudioPlay		exec playerctl play-pause
     bindsym ctrl+space			exec playerctl play-pause
 
@@ -114,7 +119,7 @@
 
 
 ### Appearance
-    output *				bg ~/pictures/wallpapers/terrifiednootnoot.png fill
+    output *				bg ~/wallpapers/doge.png fill
     font pango:				DejaVu Sans Mono 10
 
     default_border			none
