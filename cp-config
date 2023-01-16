@@ -1,0 +1,42 @@
+#!/bin/bash
+
+[[ $1 == "--to-local" || $1 == "--to-repo" ]] || { echo "Invalid argument!"; exit 1; }
+
+files=(
+# on repo				locally
+./root/bashrc				/root/.bashrc
+./root/profile				/root/.profile
+./bin/screenshot			/usr/local/bin/screenshot
+./bashrc				~/.bashrc
+./profile				~/.profile
+./config/i3status/config		~/.config/i3status/config
+./config/mpv/scripts/mpris.so		~/.config/mpv/scripts/mpris.so
+./config/mpv/script-opts/osc.conf	~/.config/mpv/script-opts/osc.conf
+./config/sway/config			~/.config/sway/config
+./config/user-dirs.dirs			~/.config/user-dirs.dirs
+./applications/footclient.desktop	~/.local/share/applications/footclient.desktop
+./applications/foot-server.desktop	~/.local/share/applications/foot-server.desktop
+./applications/gcr-prompter.desktop	~/.local/share/applications/gcr-prompter.desktop
+./applications/gcr-viewer.desktop	~/.local/share/applications/gcr-viewer.desktop
+./applications/imv.desktop		~/.local/share/applications/imv.desktop
+./applications/imv-folder.desktop	~/.local/share/applications/imv-folder.desktop
+./applications/lstopo.desktop		~/.local/share/applications/lstopo.desktop
+./applications/mpv.desktop		~/.local/share/applications/mpv.desktop
+./applications/thunar-settings.desktop	~/.local/share/applications/thunar-settings.desktop
+./applications/xfce4-about.desktop	~/.local/share/applications/xfce4-about.desktop
+)
+
+# generate array with even numbers
+lastIndice=$(( ${#files[@]} - 1 ))
+for i in $( seq 0 $lastIndice ); do
+	[[ $(($i % 2)) -eq 0 ]] && evenNumbers+=($i)
+done
+
+# iterate over the files array and copy them
+for i in ${evenNumbers[@]}; do
+	if [[ $1 == "--to-local" ]]; then
+		cp ${files[$i]} ${files[$(($i + 1))]}
+	elif [[ $1 == "--to-repo" ]]; then
+		cp ${files[$(($i + 1))]} ${files[$i]}
+	fi
+done
