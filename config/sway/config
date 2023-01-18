@@ -25,7 +25,11 @@
 					--nf '$fg' \
 					--hb '$bg' \
 					--hf '$pri' \
-					--ab '$bg'" 
+					--ab '$bg'" \
+
+    set $toggle_mic_led			bash -c "[[ $(cat "/sys/class/leds/platform::micmute/brightness") == 0 ]] \
+    					&& brightnessctl --device 'platform::micmute' set 1 \
+					|| brightnessctl --device 'platform::micmute' set 0" \
 
 
 
@@ -47,11 +51,7 @@
     bindsym XF86AudioRaiseVolume	exec pactl set-sink-volume @DEFAULT_SINK@ +5%
     bindsym XF86AudioLowerVolume	exec pactl set-sink-volume @DEFAULT_SINK@ -5%
     bindsym XF86AudioMute		exec pactl set-sink-mute @DEFAULT_SINK@ toggle
-    bindsym XF86AudioMicMute		exec pactl set-source-mute @DEFAULT_SOURCE@ toggle \
-	&& bash -c \
-	"[[ $(cat "/sys/class/leds/platform::micmute/brightness") == 0 ]] \
-	&& brightnessctl --device 'platform::micmute' set 1 \
-	|| brightnessctl --device 'platform::micmute' set 0"
+    bindsym XF86AudioMicMute		exec pactl set-source-mute @DEFAULT_SOURCE@ toggle && $toggle_mic_led
 
     bindsym XF86AudioPlay		exec playerctl play-pause
     bindsym ctrl+space			exec playerctl play-pause
@@ -118,6 +118,12 @@
 
 
 
+### Touchpad Gestures
+    bindgesture swipe:3:left		workspace next
+    bindgesture swipe:3:right		workspace prev
+
+
+
 ### Appearance
     output *				bg ~/wallpapers/doge.png fill
     font pango:				DejaVu Sans Mono 10
@@ -175,7 +181,7 @@
 ### Idle configuration
     exec swayidle -w \
 	 timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-	 timeout 3600 'systemctl suspend'
+#	 timeout 3600 'systemctl suspend'
 
 
 

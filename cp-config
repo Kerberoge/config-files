@@ -24,6 +24,7 @@ files=(
 ./applications/mpv.desktop		~/.local/share/applications/mpv.desktop
 ./applications/thunar-settings.desktop	~/.local/share/applications/thunar-settings.desktop
 ./applications/xfce4-about.desktop	~/.local/share/applications/xfce4-about.desktop
+./applications/nvim.desktop		~/.local/share/applications/nvim.desktop
 )
 
 # generate array with even numbers
