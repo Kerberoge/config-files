@@ -1,0 +1,83 @@
+#!/bin/bash
+
+ROOT=/dev/nvme0n1p2
+VERSION=6.6.25_1
+TMP_DIR=/tmp/rd
+
+BINARIES=(
+	bash
+	modprobe
+	mount
+	sleep
+	switch_root
+)
+
+MODULES=(
+	sd_mod
+	ext4
+)
+
+# search for binaries
+for file in ${BINARIES[@]}; do
+	FILES+="/usr/bin/$file "
+done
+
+# search for needed libraries
+for file in ${BINARIES[@]}; do
+	FILES+="$(ldd /usr/bin/$file | grep -v 'linux-vdso'	| cut -d' ' -f3) "
+done
+
+# search for kernel modules
+for module in ${MODULES[@]}; do
+	FILES+="$(modprobe -S $VERSION -D $module | cut -d' ' -f2) "
+done
+
+# add module metadata files
+FILES+="$(ls /lib/modules/$VERSION/modules.*)"
+
+# remove duplicates
+FILES="$(for i in $FILES; do echo $i; done | sort | uniq)"
+
+# create directory structure
+mkdir -p $TMP_DIR/{proc,sys,dev,run,usr/bin,usr/lib,new_root}
+ln -s usr/bin $TMP_DIR/bin
+ln -s usr/lib $TMP_DIR/lib
+ln -s usr/lib $TMP_DIR/lib64
+ln -s lib $TMP_DIR/usr/lib64
+
+MODULE_DIRS="$(for i in $FILES; do	echo $i; done \
+	| grep "/lib/modules" \
+	| awk -F '/' '{for (i=1;i<NF;i++) printf("%s%s", $i, i<NF-1 ? "/" : "\n")}')"
+
+for dir in $MODULE_DIRS; do
+	mkdir -p $TMP_DIR/$dir
+done
+
+# copy files
+for file in $FILES; do
+	cp $file $TMP_DIR/$file
+done
+
+# add init
+cat >$TMP_DIR/init <<EOF
+#!/bin/bash
+
+modprobe -a ${MODULES[@]}
+mount -o mode=0755,nosuid -t devtmpfs dev /dev
+
+# wait till the device node is created, or else we will get an error when we try to mount
+while [[ ! -e $ROOT ]]; do
+	sleep 0.1
+done
+
+mount $ROOT /new_root
+exec switch_root /new_root /usr/bin/runit-init
+EOF
+chmod +x $TMP_DIR/init
+
+# create compressed cpio image
+cd $TMP_DIR
+find . | cpio -ovH newc | gzip > /home/joe/src/rd/initramfs.img
+
+# clean up
+rm -r $TMP_DIR
