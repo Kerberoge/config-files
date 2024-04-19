@@ -1,0 +1,21 @@
+#!/bin/bash
+
+SETUP=$1
+
+if [[ -z $SETUP ]]; then
+	echo "error: no setup name provided"
+	exit 1
+fi
+
+cd setups/$SETUP
+DIRECTORIES=$(find . -type d | tail -n+2 | sed 's/.\//./')
+FILES=$(find config -type f)
+
+for dir in $DIRECTORIES; do
+	mkdir -p $HOME/$dir
+done
+
+for file in $FILES; do
+	cp $file $HOME/.$file
+done
+
