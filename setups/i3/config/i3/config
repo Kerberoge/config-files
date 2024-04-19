@@ -1,0 +1,139 @@
+### Appearance
+	set $win_fc				#6d86a1
+	set $win_uf				#2a2f3a
+	set $urgent				#ff5050
+	set $bar_bg				#222033
+	set $bar_fg				#dfdfdf
+	set $bar_ac				#3d3a54
+
+	default_border							pixel 2
+	default_floating_border					pixel 2
+	smart_borders							on
+
+	gaps									inner 2
+	smart_gaps								on
+
+	# class									border		background		text		indicator
+	client.focused							#ffffff		$win_fc			#ffffff		$win_fc
+	client.focused_inactive					#ffffff		$win_uf			#ffffff		$win_uf
+	client.unfocused						#ffffff		$win_uf			#ffffff		$win_uf
+	client.urgent							#ffffff		$urgent			#ffffff		$urgent
+
+	font pango:								DejaVu Sans Mono 10.5
+
+	bar {
+		position							top
+		height								20
+		workspace_min_width					30
+		separator_symbol					"      "
+		status_command						i3status
+
+		colors {
+			statusline						$bar_fg
+			background						$bar_bg
+	
+			# class							border		background		text
+			inactive_workspace				$bar_bg		$bar_bg			$bar_fg
+			active_workspace				$bar_bg		$bar_bg			$bar_fg
+			focused_workspace				$bar_ac		$bar_ac			$bar_fg
+			urgent_workspace				$urgent		$urgent			$bar_bg
+		}
+	}
+
+
+
+### Autostart
+	exec --no-startup-id pipewire
+
+
+
+### Window Rules
+	for_window [instance="galculator"]		floating enable
+	for_window [class="floating-terminal"]	floating enable
+	for_window [instance="xfce4-appfinder"]	floating enable
+	for_window [instance="xfce4-appfinder"]	border none
+
+
+
+### Keyboard Shortcuts
+	bindsym Mod1+space						exec xfce4-appfinder
+	bindsym Mod4+s							exec swaylock
+	bindsym Mod4+Return						exec --no-startup-id xfce4-terminal
+	bindsym Mod4+w							exec firefox
+	bindsym Mod4+e							exec thunar
+	bindsym XF86Launch1						exec toggle_theme
+	bindsym XF86Calculator					exec galculator
+	
+	bindsym Mod4+Shift+q					exec pkill pipewire; exit
+	bindsym Mod4+r							restart
+	bindsym Mod4+q							kill
+	bindsym Shift+XF86PowerOff				exec doas reboot
+	bindsym XF86PowerOff					exec doas zzz
+
+	bindsym --release Mod4+p				output eDP-1 toggle
+	bindsym Mod4+c							exec mousepad -o window ~/.config/i3/config
+	bindsym Mod4+Shift+c					exec mousepad -o window ~/.config/i3status/config
+	bindsym Mod4+i							exec foot -a floating-terminal iwctl
+	bindsym Mod4+b							exec foot -a floating-terminal bluetoothctl
+	bindsym XF86TouchpadToggle				exec swaylock
+	bindsym XF86Webcam						output eDP-1 power toggle
+	bindsym control+Space					exec playerctl play-pause
+	bindsym XF86AudioMute					exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+	bindsym XF86AudioRaiseVolume			exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+	bindsym XF86AudioLowerVolume			exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+	bindsym XF86MonBrightnessUp				exec brightnessctl set +10%
+	bindsym XF86MonBrightnessDown			exec brightnessctl set 10%-
+	bindsym Print							exec grim >(wl-copy)
+	bindsym Mod4+Shift+s					exec grim -g "$(slurp)" >(wl-copy)
+
+
+
+	focus_wrapping							no
+	floating_modifier						Mod4
+
+	set $left								j
+	set $down								k
+	set $up									l
+	set $right								semicolon
+	set $first								m
+	set $second								comma
+	set $third								period
+	set $fourth								slash
+
+	bindsym Mod4+$left						focus left
+	bindsym Mod4+$down						focus down
+	bindsym Mod4+$up						focus up
+	bindsym Mod4+$right						focus right
+	
+	bindsym Mod4+Shift+$left				move left 10 px
+	bindsym Mod4+Shift+$down				move down 10 px
+	bindsym Mod4+Shift+$up					move up 10 px
+	bindsym Mod4+Shift+$right				move right 10 px
+	
+	bindsym Mod4+Alt+$left					resize shrink width 10 px
+	bindsym Mod4+Alt+$down					resize grow height 10 px
+	bindsym Mod4+Alt+$up					resize shrink height 10 px
+	bindsym Mod4+Alt+$right					resize grow width 10 px
+	
+	bindsym Mod4+bracketleft				splitv
+	bindsym Mod4+bracketright				splith
+
+	bindsym Mod4+f							fullscreen
+	bindsym Mod4+space						floating toggle
+	bindsym Mod4+grave						focus mode_toggle
+
+	bindsym Mod4+equal						move scratchpad
+	bindsym Mod4+minus						scratchpad show
+
+	bindsym Mod4+$first 					workSpace number 1
+	bindsym Mod4+$second					workSpace number 2
+	bindsym Mod4+$third 					workSpace number 3
+	bindsym Mod4+$fourth 					workSpace number 4
+
+	bindsym Mod4+tab						workSpace next
+	bindsym Mod4+Shift+tab					workSpace prev
+
+	bindsym Mod4+Shift+$first 				move container to workSpace number 1
+	bindsym Mod4+Shift+$second				move container to workSpace number 2
+	bindsym Mod4+Shift+$third 				move container to workSpace number 3
+	bindsym Mod4+Shift+$fourth				move container to workSpace number 4

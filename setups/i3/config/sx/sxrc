@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# enable tap to click
+xinput set-prop 10 339 1 &
+# enable natural scrolling
+xinput set-prop 10 312 1 &
+# fix touchpad scroll speed
+xinput set-prop 10 336 50 &
+
+xset r rate 200 30 &
+xrdb ~/.local/share/sx/xresources
+hsetroot -fill ~/wallpapers/spy_family_street.png &
+picom --backend glx --vsync --unredir-if-possible --use-damage &
+exec i3
