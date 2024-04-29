@@ -7,15 +7,25 @@ if [[ -z $SETUP ]]; then
 	exit 1
 fi
 
+# gather files and directories
 cd setups/$SETUP
 DIRECTORIES=$(find . -type d | tail -n+2 | sed 's/.\//./')
 FILES=$(find config -type f)
+HIDDEN_PROGRAMS=$(cat hidden_programs)
 
+<<COMMENT
+# create the directories where the configuration files will be placed
 for dir in $DIRECTORIES; do
 	mkdir -p $HOME/$dir
 done
 
+# copy configuration files
 for file in $FILES; do
 	cp $file $HOME/.$file
 done
+COMMENT
 
+# hide .desktop files from app launchers
+for program in $HIDDEN_PROGRAMS; do
+	echo "NoDisplay=true" > $HOME/.local/share/applications/$program
+done
