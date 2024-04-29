@@ -1,0 +1,11 @@
+#!/bin/bash
+
+PROGRAMS=$(for i in $(cat applications/hidden); do
+	if [[ -e /usr/share/applications/$i ]]; then
+		echo $i
+	fi
+done)
+
+for program in $PROGRAMS; do
+	echo "NoDisplay=true" > $HOME/.local/share/applications/$program
+done
