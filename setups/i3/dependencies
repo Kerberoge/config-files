@@ -8,3 +8,8 @@ xinput
 xset
 xrdb
 papirus-icon-theme
+maim
+xclip
+libinput-gestures
+python3-distutils-extra
+xdotool
