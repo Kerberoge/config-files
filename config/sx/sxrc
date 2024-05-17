@@ -1,0 +1,24 @@
+#!/bin/bash
+
+exec >/dev/null 2>&1
+
+# enable tap to click
+xinput set-prop 10 339 1 &
+# enable natural scrolling
+xinput set-prop 10 312 1 &
+# fix touchpad scroll speed
+xinput set-prop 10 336 50 &
+
+export XCURSOR_PATH=~/.local/share/icons
+xrdb <<EOF
+Xcursor.theme:	Bibata-Modern-Classic
+Xcursor.size:	20
+EOF
+
+xset r rate 200 30 &
+hsetroot -fill ~/wallpapers/spy_family_street.png &
+picom --backend glx --vsync --unredir-if-possible --use-damage &
+pipewire &
+pipewire-pulse &
+wireplumber &
+exec i3
