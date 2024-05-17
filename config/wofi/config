@@ -1,0 +1,5 @@
+mode=drun
+width=250
+height=300
+no_actions=true
+prompt=Search
