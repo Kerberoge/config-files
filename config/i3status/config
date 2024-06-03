@@ -1,54 +1,70 @@
 general {
-	markup = "pango"
-	colors = true
-	color_bad = "#ff0000"
+	output_format =			none
+	interval =				1
+	markup =				"pango"
+	color_bad =				"#ff5050"
 }
 
-order += "load"
-order += "memory"
-order += "cpu_temperature 4"
+order += "path_exists s0ix"
 order += "volume master"
-order += "wireless wlan0"
+order += "memory"
+order += "cpu_usage"
+order += "cpu_temperature 0"
+order += "wireless wlo1"
 order += "battery 0"
 order += "time"
 order += "tztime local"
 
-load {
-	format =			"<span color='#5294e2'>%1min   %5min   %15min</span>"
-}
-
-memory {
-	memory_used_method =		"memavailable"
-        format =			"%used"
-}
-
-cpu_temperature 4 {
-	format =			"<span color='#5294e2'>%degrees°C</span>"
+path_exists s0ix {
+	path =							/tmp/s0ix_stopped_working
+	format =						"<span color='#ff5050'>S0ix stopped working</span>"
+	format_down =					""
 }
 
 volume master {
-        format =			"%volume"
-        format_muted =			"<span color='#707880'>muted</span>"
-        device =			"default"
+	format =						"<span color='#7a72b5'></span> <span color='#dfdfdf'>%volume</span>"
+	format_muted =					"<span color='#7a72b5'></span> <span color='#dfdfdf'>muted</span>"
+	device =						default
 }
 
-wireless wlan0 {
-	format_up =			"<span color='#5294e2'>UP</span>"
-	format_down = 			"DOWN"
+memory {
+	format =						"<span color='#7a72b5'></span> %used"
+	memory_used_method =			memavailable
+}
+
+cpu_usage {
+	degraded_threshold =			90
+	max_threshold =					95
+	format =						"<span color='#7a72b5'></span> %usage"
+}
+
+cpu_temperature 0 {
+	path = 							/sys/class/hwmon/hwmon3/temp1_input
+	max_threshold =					70
+	format =						"<span color='#7a72b5'></span> %degrees°C"
+}
+
+wireless wlo1 {
+	format_up =						"<span color='#7a72b5'></span> <span color='#dfdfdf'>%essid</span>"
+	format_down =					"<span color='#7a72b5'></span> disconnected"
 }
 
 battery 0 {
-	last_full_capacity =		true
-	format =			"%percentage"
-	integer_battery_capacity =	true
-	low_threshold =			10
-	threshold_type =		percentage
+	last_full_capacity =			true
+	integer_battery_capacity =		true
+	status_chr =					" "
+	status_bat =					""
+	status_full =					""
+	status_unk =					""
+	low_threshold =					10
+	threshold_type =				percentage
+	format =						"<span color='#7a72b5'>%status</span> %percentage"
 }
 
 time {
-        format =			"<span color='#5294e2'>%a %b %e</span>"
+	format =						"<span color='#7a72b5'></span> %a %d-%m"
 }
 
 tztime local {
-	format =			"%k:%M"
+	format =						"<span color='#7a72b5'></span> %k:%M"
 }
