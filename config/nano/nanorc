@@ -1,0 +1,18 @@
+include /usr/share/nano/nanorc.nanorc
+include /usr/share/nano/sh.nanorc
+include /usr/share/nano/c.nanorc
+include /usr/share/nano/makefile.nanorc
+include /usr/share/nano/python.nanorc
+
+set tabsize 4
+set autoindent
+set softwrap
+set atblanks
+set minibar
+set nohelp
+set constantshow
+set linenumbers
+
+set numbercolor	lightyellow,normal
+set minicolor	black,lightyellow
+set promptcolor	black,lightyellow
