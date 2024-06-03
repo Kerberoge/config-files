@@ -1,188 +1,168 @@
-### Variables
-    set $mod				Mod4
-    set $left				j
-    set $down				k
-    set $up				l
-    set $right				semicolon
+### Appearance
+	set $win_fc				#6d86a1
+	set $win_uf				#2a2f3a
+	set $urgent				#ff5050
+	set $bar_bg				#222033
+	set $bar_fg				#dfdfdf
+	set $bar_ac				#3d3a54
+	
+	output *								bg ~/wallpapers/spy_family_street.png fill
+	seat seat0								xcursor_theme Bibata-Modern-Classic 20
 
-    set $fg				#c5c8c6
-    set $bg				#1d2129
-    set $pri				#5294e2
-    set $ws				#454f61
-    set $al				#ff0000
+	default_border							pixel 2
+	default_floating_border					pixel 2
+	smart_borders							on
 
-    set $menu				j4-dmenu-desktop --no-generic --dmenu="bemenu -i \
-    					--fn 'DejaVu Sans Mono 10' \
-					-b \
-					-H 20 \
-					--hp 20 \
-					--ch 16 \
-					--tb '$bg' \
-					--tf '$pri' \
-					--fb '$bg' \
-					--ff '$fg' \
-					--nb '$bg' \
-					--nf '$fg' \
-					--hb '$bg' \
-					--hf '$pri' \
-					--ab '$bg'" \
+	gaps									inner 2
+	smart_gaps								on
 
-    set $toggle_mic_led			bash -c "[[ $(cat "/sys/class/leds/platform::micmute/brightness") == 0 ]] \
-    					&& brightnessctl --device 'platform::micmute' set 1 \
-					|| brightnessctl --device 'platform::micmute' set 0" \
+	# class									border		background		text		indicator
+	client.focused							#ffffff		$win_fc			#ffffff		$win_fc
+	client.focused_inactive					#ffffff		$win_uf			#ffffff		$win_uf
+	client.unfocused						#ffffff		$win_uf			#ffffff		$win_uf
+	client.urgent							#ffffff		$urgent			#ffffff		$urgent
+
+	font pango:								DejaVu Sans Mono 10.5
+
+	bar {
+		position							top
+		height								20
+		workspace_min_width					30
+		status_edge_padding					20
+		status_command						i3status
+
+		colors {
+			statusline						$bar_fg
+			background						$bar_bg
+	
+			# class							border		background		text
+			inactive_workspace				$bar_bg		$bar_bg			$bar_fg
+			active_workspace				$bar_bg		$bar_bg			$bar_fg
+			focused_workspace				$bar_ac		$bar_ac			$bar_fg
+			urgent_workspace				$urgent		$urgent			$bar_bg
+		}
+	}
+
+
+
+### Autostart
+	exec pipewire
+	exec pipewire-pulse
+	exec wireplumber
+
+
+
+### Window Rules
+	for_window [app_id="galculator"]		floating enable
+	for_window [app_id="floating-terminal"]	floating enable
+	for_window [app_id="xfce4-appfinder"]	floating enable; border none
 
 
 
 ### Keyboard Shortcuts
-    bindsym Pause			exec systemctl suspend
-    bindsym XF86PowerOff		output eDP-1 toggle
+	bindsym alt+space						exec xfce4-appfinder
+	bindsym Mod4+return						exec foot
+	bindsym Mod4+shift+return				exec foot -a floating-terminal
+	bindsym Mod4+w							exec firefox
+	bindsym Mod4+e							exec thunar
+	bindsym XF86Launch1						exec toggle_theme
+	bindsym XF86Calculator					exec galculator
+	
+	bindsym Mod4+shift+q					exec pkill pipewire; exit
+	bindsym Mod4+r							reload
+	bindsym Mod4+q							kill
+	bindsym shift+XF86PowerOff				exec doas reboot
+	bindsym XF86PowerOff					exec doas zzz
 
-    bindsym $mod+Shift+q		exit
-    bindsym $mod+Shift+r		exec systemctl reboot
-    bindsym $mod+r			reload
-    bindsym $mod+q			kill
+	bindsym --release Mod4+p				output eDP-1 toggle
+	bindsym Mod4+c							exec mousepad -o window ~/.config/sway/config
+	bindsym Mod4+shift+c					exec mousepad -o window ~/.config/i3status/config
+	bindsym Mod4+i							exec foot -a floating-terminal iwctl
+	bindsym Mod4+b							exec foot -a floating-terminal bluetoothctl
+	bindsym XF86TouchpadToggle				exec swaylock
+	bindsym XF86Webcam						output eDP-1 power toggle
+	bindsym Mod4+u							exec wtype -M ctrl -M shift -k tab
+	bindsym Mod4+o							exec wtype -M ctrl -k tab
+	bindsym control+space					exec playerctl play-pause
+	bindsym XF86AudioMute					exec volume mute
+	bindsym XF86AudioRaiseVolume			exec volume up
+	bindsym XF86AudioLowerVolume			exec volume down
+	bindsym XF86MonBrightnessUp				exec brightnessctl set +10%
+	bindsym XF86MonBrightnessDown			exec brightnessctl set 10%-
+	bindsym print							exec grim >(wl-copy)
+	bindsym Mod4+shift+s					exec grim -g "$(slurp)" >(wl-copy)
 
-    bindsym alt+space			exec $menu
-    bindsym XF86Search			exec $menu
-    bindsym $mod+Return			exec foot
-    bindsym $mod+w			exec firefox
-    bindsym $mod+e			exec thunar
 
-    bindsym XF86AudioRaiseVolume	exec pactl set-sink-volume @DEFAULT_SINK@ +5%
-    bindsym XF86AudioLowerVolume	exec pactl set-sink-volume @DEFAULT_SINK@ -5%
-    bindsym XF86AudioMute		exec pactl set-sink-mute @DEFAULT_SINK@ toggle
-    bindsym XF86AudioMicMute		exec pactl set-source-mute @DEFAULT_SOURCE@ toggle && $toggle_mic_led
 
-    bindsym XF86AudioPlay		exec playerctl play-pause
-    bindsym ctrl+space			exec playerctl play-pause
+	focus_wrapping							no
+	floating_modifier						Mod4
+	
+	bindsym Mod4+bracketleft				splitv
+	bindsym Mod4+bracketright				splith
+	bindsym Mod4+f							fullscreen
+	bindsym Mod4+space						floating toggle
+	bindsym Mod4+grave						focus mode_toggle
+	bindsym Mod4+equal						move scratchpad
+	bindsym Mod4+minus						scratchpad show
+	bindsym Mod4+a							sticky toggle
+	
+	set $left								j
+	set $down								k
+	set $up									l
+	set $right								semicolon
+	set $first								m
+	set $second								comma
+	set $third								period
+	set $fourth								slash
 
-    bindsym XF86MonBrightnessUp		exec brightnessctl set +10%
-    bindsym XF86MonBrightnessDown	exec brightnessctl set 10%-
-    bindsym Shift+XF86MonBrightnessUp	exec brightnessctl set +1%
-    bindsym Shift+XF86MonBrightnessDown	exec brightnessctl set 1%-
+	bindsym Mod4+$left						focus left
+	bindsym Mod4+$down						focus down
+	bindsym Mod4+$up						focus up
+	bindsym Mod4+$right						focus right
+	
+	bindsym Mod4+shift+$left				move left 10 px
+	bindsym Mod4+shift+$down				move down 10 px
+	bindsym Mod4+shift+$up					move up 10 px
+	bindsym Mod4+shift+$right				move right 10 px
+	
+	bindsym Mod4+alt+$left					resize shrink width 10 px
+	bindsym Mod4+alt+$down					resize grow height 10 px
+	bindsym Mod4+alt+$up					resize shrink height 10 px
+	bindsym Mod4+alt+$right					resize grow width 10 px
 
-    bindsym Print			exec screenshot -s
-    bindsym Shift+Print			exec screenshot -r
+	bindsym Mod4+tab						workspace next
+	bindsym Mod4+shift+tab					workspace prev
 
-    floating_modifier $mod		normal
+	bindsym Mod4+$first 					workspace number 1
+	bindsym Mod4+$second					workspace number 2
+	bindsym Mod4+$third 					workspace number 3
+	bindsym Mod4+$fourth 					workspace number 4
 
-    bindsym $mod+$left			focus left
-    bindsym $mod+$down			focus down
-    bindsym $mod+$up			focus up
-    bindsym $mod+$right			focus right
-
-    bindsym $mod+Shift+$left		move left 10px
-    bindsym $mod+Shift+$down		move down 10px
-    bindsym $mod+Shift+$up		move up 10px
-    bindsym $mod+Shift+$right		move right 10px
-
-    bindsym alt+$left			resize shrink width 10px
-    bindsym alt+$down			resize shrink height 10px
-    bindsym alt+$up			resize grow height 10px
-    bindsym alt+$right			resize grow width 10px
-
-    bindsym $mod+bracketright		splith
-    bindsym $mod+bracketleft		splitv
-
-    bindsym $mod+f			fullscreen
-    bindsym $mod+space			floating toggle
-    bindsym $mod+grave			focus mode_toggle
-
-    bindsym $mod+equal			move scratchpad
-    bindsym $mod+minus			scratchpad show
-
-    bindsym $mod+1 			workspace number 1
-    bindsym $mod+2 			workspace number 2
-    bindsym $mod+3 			workspace number 3
-    bindsym $mod+4 			workspace number 4
-    bindsym $mod+5 			workspace number 5
-    bindsym $mod+6 			workspace number 6
-    bindsym $mod+7 			workspace number 7
-    bindsym $mod+8 			workspace number 8
-    bindsym $mod+9 			workspace number 9
-    bindsym $mod+0 			workspace number 10
-
-    bindsym $mod+tab			workspace next
-    bindsym $mod+Shift+tab		workspace prev
-
-    bindsym $mod+Shift+1 		move container to workspace number 1
-    bindsym $mod+Shift+2 		move container to workspace number 2
-    bindsym $mod+Shift+3 		move container to workspace number 3
-    bindsym $mod+Shift+4 		move container to workspace number 4
-    bindsym $mod+Shift+5 		move container to workspace number 5
-    bindsym $mod+Shift+6 		move container to workspace number 6
-    bindsym $mod+Shift+7 		move container to workspace number 7
-    bindsym $mod+Shift+8 		move container to workspace number 8
-    bindsym $mod+Shift+9 		move container to workspace number 9
-    bindsym $mod+Shift+0 		move container to workspace number 10
+	bindsym Mod4+shift+$first 				move container to workspace number 1
+	bindsym Mod4+shift+$second				move container to workspace number 2
+	bindsym Mod4+shift+$third 				move container to workspace number 3
+	bindsym Mod4+shift+$fourth				move container to workspace number 4
 
 
 
 ### Touchpad Gestures
-    bindgesture swipe:3:left		workspace next
-    bindgesture swipe:3:right		workspace prev
+	bindgesture swipe:3:left				workspace next
+	bindgesture swipe:3:right				workspace prev
+	bindgesture swipe:3:down				input type:keyboard events toggle disabled enabled
 
 
 
-### Appearance
-    output *				bg ~/wallpapers/doge.png fill
-    font pango:				DejaVu Sans Mono 10
-
-    default_border			none
-    default_floating_border		none
-
-    gaps				inner 2
-    smart_gaps				on
-
-    bar {
-	position			bottom
-	height				20
-	separator_symbol		"        "
-	status_command			i3status
-	status_edge_padding		20
-	workspace_min_width		40
-
-	colors {
-	    statusline			$fg
-	    background			$bg
-	    
-	    # class			border  bg	text
-	    inactive_workspace		$bg	$bg	$fg
-	    active_workspace		$bg	$bg	$fg
-	    focused_workspace		$ws	$ws	$fg
-	    urgent_workspace		$al	$al	$fg
+### Input Configuration
+	input type:keyboard {
+		repeat_delay 200
+		repeat_rate 30
+		xkb_layout us,us(intl)
+		xkb_options grp:shifts_toggle
 	}
-    }
 
-
-
-### Rules
-    for_window [title="File Operation Progress"] floating on
-
-
-
-### Input configuration
-    input type:keyboard {
-        repeat_delay 200
-	repeat_rate 30
-	xkb_layout us,us(intl)
-        xkb_options grp:shifts_toggle
-    }
-
-    input type:touchpad {
-        tap enabled
-        natural_scroll enabled
-        middle_emulation enabled
-	scroll_factor 0.3
-    }
-
-
-
-### Idle configuration
-    exec swayidle -w \
-	 timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-#	 timeout 3600 'systemctl suspend'
-
-
-
-include /etc/sway/config.d/*
+	input type:touchpad {
+		tap enabled
+		natural_scroll enabled
+		middle_emulation enabled
+		scroll_factor 0.2
+	}
