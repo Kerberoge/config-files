@@ -1,0 +1,6 @@
+#!/bin/bash
+
+swaymsg -s /run/user/1000/sway-ipc.1000.*.sock -t get_outputs | grep -q HDMI-A-1 && \
+grep -q closed /proc/acpi/button/lid/LID0/state && \
+swaymsg -s /run/user/1000/sway-ipc.1000.*.sock output eDP-1 disable && \
+swaymsg -s /run/user/1000/sway-ipc.1000.*.sock workspace number 1
