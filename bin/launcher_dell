@@ -1,0 +1,22 @@
+#!/bin/bash
+
+bar_ac=7da5ff
+bar_bg=1d293d
+bar_fg=eeeeee
+
+command=$(j4-dmenu-desktop --no-generic --no-exec --dmenu="bemenu -i \
+	--fn 'Open Sans SemiBold 9' \
+	-p '' \
+	-H 18 \
+	--hp 20 \
+	--ch 16 \
+	--fb \#$bar_bg \
+	--ff \#$bar_fg \
+	--nb \#$bar_bg \
+	--nf \#$bar_fg \
+	--hb \#$bar_bg \
+	--hf \#$bar_ac \
+	--ab \#$bar_bg \
+	--af \#$bar_fg" 2>&1 | tail -n1)
+
+[[ -n $command ]] && ($command &)
