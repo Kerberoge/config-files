@@ -1,0 +1,31 @@
+#!/bin/bash
+
+bar_ac=#9186db
+bar_bg=#222033
+bar_fg=#dddddd
+
+bemenu="bemenu -i \
+	--fn 'DejaVu Sans Mono 10.5' \
+	-p '' \
+	-H 18 \
+	--hp 20 \
+	--ch 16 \
+	--fb '$bar_bg' \
+	--ff '$bar_fg' \
+	--nb '$bar_bg' \
+	--nf '$bar_fg' \
+	--hb '$bar_bg' \
+	--hf '$bar_ac' \
+	--ab '$bar_bg' \
+	--af '$bar_fg'"
+
+command=$(j4-dmenu-desktop \
+	--no-generic \
+	--no-exec \
+	--usage-log=$HOME/.cache/j4-dmenu-desktop \
+	--term=foot \
+	--dmenu="$bemenu")
+
+echo $command
+
+[[ -n $command ]] && ($command &)
