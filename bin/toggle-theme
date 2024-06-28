@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [[ $(gsettings get org.gnome.desktop.interface gtk-theme) == "'Adwaita'" ]]; then
+	gsettings set org.gnome.desktop.interface gtk-theme 'Nordic-bluish-accent'
+	gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
+else
+	gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita'
+	gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Light'
+fi
