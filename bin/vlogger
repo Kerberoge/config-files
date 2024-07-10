@@ -1,0 +1,15 @@
+#!/bin/sh
+
+while getopts ":t:" opt; do
+	case "$opt" in
+		t)
+			tag=$OPTARG
+			;;
+	esac
+done
+
+while read -r line; do
+	timestamp=$(date '+%d-%m-%Y %H:%M:%S')
+	line=$(sed 's/[a-z]*\[[0-9]*\]: //' <<< $line)
+	echo "$timestamp    $line" >> /var/log/services/$tag
+done
