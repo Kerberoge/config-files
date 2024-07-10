@@ -1,0 +1,20 @@
+#!/bin/sh
+
+die() {
+	echo "${0##*/}: no service name was provided"
+	exit 1
+}
+
+case $1 in
+	"enable")
+		[ -n "$2" ] || die
+		ln -s /etc/sv/$2 /var/service/
+		;;
+	"disable")
+		[ -n "$2" ] || die
+		rm /var/service/$2
+		;;
+	*)
+		exec /usr/bin/sv "$@"
+		;;
+esac
