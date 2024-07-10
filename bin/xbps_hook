@@ -2,66 +2,30 @@
 
 # This script functions as a hook for xbps.
 
-create_log_dir() {
-	for service in /etc/sv/*; do
-		mkdir $service/log
-	done
-}
-
-remove_log_dir() {
-	for service in /etc/sv/*; do
-		if [[ -d $service/log ]]; then
-			rm -r $service/log
-		fi
-	done
-}
-
-disable_output() {
-	for service in $@; do
-		sed -i 's|exec 2>\&1|exec >/dev/null 2>\&1|' /etc/sv/$service/run
-	done
-}
-
-remove_disabled_users() {
-	for user in $(grep 'for uninstalled package' /etc/passwd | cut -d: -f1); do
-		userdel $user
-	done
-}
-
 PROGRAM_NAME=${0#/usr/local/bin/}
 USER=$(whoami)
 
-if [[ $USER == "root" && $PROGRAM_NAME == "xbps-install" ]]; then
+if [[ $USER != "root" ]]; then
+	exec /usr/bin/$PROGRAM_NAME "$@"
+
+elif [[ $PROGRAM_NAME == "xbps-install" ]]; then
 	/usr/bin/xbps-install "$@"
 
 	# clean package cache
-	if [[ -n $(ls /var/cache/xbps) ]]; then
-		rm /var/cache/xbps/*
-	fi
-
-	# disable logging
-	remove_log_dir
-
-	# ensure services do not output to tty1 when run
-	disable_output acpid bluetoothd dbus iwd seatd
+	#if [[ -n $(ls /var/cache/xbps) ]]; then
+	#	rm /var/cache/xbps/*
+	#fi
 
 	# remove duplicate config files that appear after updating
 	for i in $(find /etc -name "*.new-*"); do
 		rm $i
 	done
 
-elif [[ $USER == "root" && $PROGRAM_NAME == "xbps-remove" ]]; then
-	# temporarily create the log directories, to prevent errors when removing packages
-	create_log_dir
-
+elif [[ $PROGRAM_NAME == "xbps-remove" ]]; then
 	/usr/bin/xbps-remove "$@"
 
-	# disable logging
-	remove_log_dir
-
 	# remove obsolete users
-	remove_disabled_users
-
-else
-	/usr/bin/$PROGRAM_NAME "$@"
+	for user in $(grep 'for uninstalled package' /etc/passwd | cut -d: -f1); do
+		userdel $user
+	done
 fi
