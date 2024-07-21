@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# log rotation is triggered when the log file is larger than 1MB
+max_size=$((1*1024*1024))
+
+for log in /var/log/services/*; do
+	size=$(ls -l $log | awk '{print $5}')
+
+	if [ $size -gt $max_size ]; then
+		line_count=$(( $(tail -c $max_size $log | wc -l) - 1 ))
+
+		mv $log $log.old
+		tail -n $line_count $log.old > $log
+		rm $log.old
+	fi
+done
