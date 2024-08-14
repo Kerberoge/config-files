@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+	echo "error: no package name provided"
+	exit 1
+fi
+
+pkg=$(xbps-query -R -p pkgver $1)
+
+if [ $? -gt 0 ]; then
+	echo "error: $1: no such package"
+	exit 1
+fi
+
+curl -O https://repo-default.voidlinux.org/current/$pkg.x86_64.xbps
