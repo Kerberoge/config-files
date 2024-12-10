@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [[ $1 == "-e" ]]; then
+	# List only explicitly installed packages
+	awk -F ': ' 'ARGIND == 1 { arr[$1]++ } ARGIND == 2 && !arr[$1]' \
+		<(xbps-query -p automatic-install -s '') \
+		<(xbps-query -p install-date -s '') |
+		sort -t: -k2 |
+		column -t -l2 -s: -o' :'
+else
+	xbps-query -p install-date -s '' |
+		sort -t: -k2 |
+		column -t -l2 -s: -o' :'
+fi

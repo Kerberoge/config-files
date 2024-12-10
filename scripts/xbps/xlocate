@@ -1,12 +1,17 @@
 #!/bin/sh
 
+. /usr/local/lib/xbps_functions
+
+XLOCATE_REPO=https://repo-default.voidlinux.org/xlocate/xlocate.git
+XLOCATE_GIT=/home/joe/.cache/xlocate
+
+BOLD=$(echo -e '\e[1m')
+END=$(echo -e '\e[0m')
+
 if [ -z "$1" ]; then
 	echo "usage: xlocate [FILE]"
 	exit 1
 fi
-
-XLOCATE_REPO=https://repo-default.voidlinux.org/xlocate/xlocate.git
-XLOCATE_GIT=/home/joe/.cache/xlocate
 
 if [ "$1" = "--update" ]; then
 	[ -d "$XLOCATE_GIT" ] && rm -rf $XLOCATE_GIT
@@ -14,9 +19,6 @@ if [ "$1" = "--update" ]; then
 	exit 0
 fi
 
-BOLD=$(echo -e '\e[1m')
-END=$(echo -e '\e[0m')
-
-git --git-dir=$XLOCATE_GIT grep -E "(^|/)$@($| )" @ |
+git --git-dir=$XLOCATE_GIT grep $@ @ |
 	sed -E -e 's/^@://' -e 's/-[0-9._]+//' -e "s/([A-Za-z0-9._-]+)/${BOLD}\1${END}/" |
-	column -ts: -l2
+	column

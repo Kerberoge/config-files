@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ $ZZZ_MODE = "suspend" ]; then
+	counter_before=$(cat /tmp/s0ix_counter)
+	counter_after=$(cat /sys/kernel/debug/pmc_core/slp_s0_residency_usec)
+
+	rm /tmp/s0ix_counter
+
+	if [ $counter_before -eq $counter_after ]; then
+		touch /tmp/s0ix_stopped_working
+	fi
+fi

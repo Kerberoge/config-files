@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if grep -q closed /proc/acpi/button/lid/LID/state; then
+	date=$(date '+%d-%m-%Y %H:%M:%S')
+	capacity=$(cat /sys/class/power_supply/BAT0/capacity)%
+	echo "$date    $capacity" >> /var/log/resume
+
+	(
+	# wait till the lock of the previous zzz process is freed
+	flock -s 9
+	# make the new lock invisible to the new zzz process
+	exec 9<&-
+	zzz >/dev/null
+	) 9</sys/power &
+fi

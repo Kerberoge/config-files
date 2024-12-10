@@ -1,0 +1,58 @@
+#!/bin/sh
+
+# Functions for xi, xr, xq, xilog, and xlocate.
+
+NOLOG_SERVICES="acpid bluetoothd dbus iwd seatd udevd"
+
+clean_package_cache() {
+	if [ -n "$(ls /var/cache/xbps)" ]; then
+		rm /var/cache/xbps/*
+	fi
+}
+
+column() {
+	awk -F "${1:-:}" -vOFS="${2:- : }" '{
+		len = length($1);
+		if (len > maxlen)
+			maxlen = len;
+		a[NR] = $1;
+		b[NR] = $2;
+	}
+	END {
+		fmt = "%-" maxlen "s" OFS "%s\n"
+		for (i=1; i<=NR; i++) {
+			if (b[i] == "")
+				printf("%s\n", a[i]);
+			else
+				printf(fmt, a[i], b[i]);
+		}
+	}'
+}
+
+disable_logging() {
+	for service in $NOLOG_SERVICES; do
+		if [ -d /etc/sv/$service/log ]; then
+			rm -r /etc/sv/$service/log
+		fi
+		sed -i 's|exec 2>\&1|exec >/dev/null 2>\&1|' /etc/sv/$service/run
+	done
+}
+
+enable_logging() {
+	for service in $NOLOG_SERVICES; do
+		mkdir -p /etc/sv/$service/log
+		sed -i 's|exec >/dev/null 2>\&1|exec 2>\&1|' /etc/sv/$service/run
+	done
+}
+
+remove_new_files() {
+	for i in $(find /etc -name "*.new-*"); do
+		rm $i
+	done
+}
+
+remove_obsolete_users() {
+	for user in $(grep 'for uninstalled package' /etc/passwd | cut -d: -f1); do
+		userdel $user
+	done
+}

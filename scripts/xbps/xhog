@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Shell script that shows the top largest packages in descending order.
+
+. /usr/local/lib/xbps_functions
+
+count=$1
+[ -z $count ] && count=10
+
+xbps-query -s '' -p installed_size |
+	sed 's/-[0-9|\.|_]*://' |
+	awk '{ t=$1; $1=$2; $2=t; print }' |
+	sort -hr |
+	head -n$count |
+	column ' ' '  '

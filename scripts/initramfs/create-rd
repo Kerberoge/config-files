@@ -76,8 +76,9 @@ EOF
 chmod +x $TMP_DIR/init
 
 # create compressed cpio image
+OLD_DIR=$PWD
 cd $TMP_DIR
-find . | cpio -ovH newc | gzip > /home/joe/src/rd/initramfs.img
+find . | cpio -ovH newc | gzip > $OLD_DIR/initramfs.img
 
 # clean up
 rm -r $TMP_DIR

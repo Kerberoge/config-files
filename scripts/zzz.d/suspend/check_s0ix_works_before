@@ -1,0 +1,5 @@
+#!/bin/sh
+
+if [ $ZZZ_MODE = "suspend" ]; then
+	cat /sys/kernel/debug/pmc_core/slp_s0_residency_usec > /tmp/s0ix_counter
+fi

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+. /usr/local/lib/xbps_functions
+
+if [ ! $(whoami) = "root" ]; then
+	exec /usr/bin/xbps-install "$@"
+else
+	/usr/bin/xbps-install "$@"
+	disable_logging
+	clean_package_cache
+	remove_new_files
+fi

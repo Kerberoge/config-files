@@ -1,0 +1,13 @@
+#!/bin/bash
+
+. /usr/local/lib/xbps_functions
+
+output=$(xbps-query "$@")
+
+if [[ $? -gt 0 ]]; then
+	echo "$output"
+else
+	esc=$(printf '\033')
+	sed -E -e "s/([A-z0-9_-]*:)/$esc[1m\1$esc[0m/" -e 's/ /|/' <<< "$output" |
+		column '|' '  '
+fi

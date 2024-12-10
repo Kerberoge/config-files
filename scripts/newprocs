@@ -1,0 +1,17 @@
+#!/bin/bash
+
+cmd() {
+	ps_cmd="ps -o pid=,ppid=,user=,command= -N --ppid $$"
+	$ps_cmd | grep -Ev "\[|$ps_cmd"
+}
+
+get_new_processes() {
+	old=$(cmd)
+	sleep 0.1
+	new=$(cmd)
+	comm -13 <(echo "$old") <(echo "$new")
+}
+
+while :; do
+	get_new_processes
+done

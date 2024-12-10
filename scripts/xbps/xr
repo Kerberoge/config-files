@@ -1,0 +1,12 @@
+#!/bin/sh
+
+. /usr/local/lib/xbps_functions
+
+if [ ! $(whoami) = "root" ]; then
+	exec /usr/bin/xbps-remove "$@"
+else
+	enable_logging
+	/usr/bin/xbps-remove -R "$@"
+	disable_logging
+	remove_obsolete_users
+fi

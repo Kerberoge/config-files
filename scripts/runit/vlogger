@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 while getopts ":t:" opt; do
 	case "$opt" in
@@ -8,8 +8,10 @@ while getopts ":t:" opt; do
 	esac
 done
 
-while read -r line; do
+tag=$(printf "%10s" $tag)
+
+while IFS= read -r line; do
 	timestamp=$(date '+%d-%m-%Y %H:%M:%S')
 	line=$(sed 's/[a-z]*\[[0-9]*\]: //' <<< $line)
-	echo "$timestamp    $line" >> /var/log/services/$tag
+	echo "$timestamp    $tag    $line" >> /var/log/services
 done
