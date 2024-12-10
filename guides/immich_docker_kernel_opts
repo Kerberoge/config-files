@@ -1,0 +1,43 @@
+To run the Immich docker container with a custom kernel, one needs to enable the following
+options:
+
+    General setup  --->
+    [*] POSIX Message Queues
+        BPF subsystem  --->
+        [*] Enable bpf() system call
+    [*] Control Group support  --->
+        [*] Memory controller
+        [*] IO controller
+        [*] CPU controller
+        [*] Cpuset controller
+        [*] Support for eBPF programs attached to cgroups
+    [*] Namespaces support  --->
+        [*] UTS namespace
+        [*] IPC namespace
+        [*] PID Namespaces
+        [*] Network namespace
+[*] Networking support  --->
+        Networking options  --->
+        [*] Network packet filtering framework (Netfilter)  --->
+            [*] Advanced netfilter configuration
+            [*]     Bridged IP/ARP packets filtering
+                Core Netfilter Configuration  --->
+                [*] Netfilter connection tracking support
+                [*] Network Address Translation support
+                [*] Netfilter Xtables support (required for ip_tables)
+                [*]     "SNAT and DNAT" targets support
+                [*]     MASQUERADE target support
+                [*]     "addrtype" address type match support
+                [*]     "conntrack" connection tracking match support
+                IP: Netfilter Configuration  --->
+                [*] IP tables support (required for filtering/masq/NAT)
+                [*]     Packet filtering
+                [*]     iptables NAT support
+                [*]         MASQUERADE target support
+        [*] 802.1d Ethernet Bridging   
+    Device Drivers  --->
+    [*] Network device support  --->
+        [*] Network core driver support
+        [*]     Virtual ethernet pair device
+    File systems  --->
+        [*] Overlay filesystem support

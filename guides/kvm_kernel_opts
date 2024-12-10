@@ -1,0 +1,30 @@
+In order to enable virtualization and KVM in the Linux kernel, one needs to enable the following options:
+
+[*] Virtualization  --->
+	[*] Kernel-based Virtual Machine (KVM) support
+	[*]   KVM for Intel (and compatible) processors support
+[*] Networking support  --->
+		Networking options  --->
+		[*] Network packet filtering framework (Netfilter)  --->
+				Core Netfilter Configuration  --->
+				[*] Netfilter connection tracking support
+				[*] Network Address Translation support
+				[*] Netfilter Xtables support (required for ip_tables)
+				[*] "SNAT and DNAT" targets support
+				[*] MASQUERADE target support
+				[*] "conntrack" connection tracking match support
+				IP: Netfilter Configuration  --->
+				[*] IPv4 packet rejection
+				[*] IP tables support (required for filtering/masq/NAT)
+				[*]   Packet filtering
+				[*]     REJECT target support
+				[*]   iptables NAT support
+				[*]   Packet mangling
+		[*] 802.1d Ethernet Bridging
+    Device Drivers  --->
+	[*] Network device support  --->
+		[*] Network core driver support
+		[*]   Universal TUN/TAP device driver support
+	File systems  --->
+	[*] The Extended 4 (ext4) filesystem
+	[*]   Ext4 Security Labels

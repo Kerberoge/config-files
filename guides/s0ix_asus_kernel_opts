@@ -1,0 +1,9 @@
+    Device Drivers  --->
+	    Character devices  --->
+		[*] TPM Hardware Support  --->
+		    [*] TPM 2.0 CRB Interface
+	    -*- X86 Platform Specific Device Drivers  --->
+		    [*] Intel PMC Core driver
+	Kernel hacking  --->
+	    Generic Kernel Debugging Instruments  --->
+		[*] Debug Filesystem

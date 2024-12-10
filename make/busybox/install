@@ -1,0 +1,5 @@
+#!/bin/sh
+
+chown root:root busybox
+chmod 4755 busybox
+mv busybox /usr/bin
