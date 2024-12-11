@@ -1,0 +1,99 @@
+In order to statically compile BusyBox with uClibc as the libc, one needs to create a cross compilation toolchain first.
+
+Prerequisites: (sources)
+- binutils
+- gcc
+- uclibc-ng
+- linux
+- busybox (duh)
+
+Links:
+https://ftp.gnu.org/gnu/binutils/binutils-2.43.1.tar.xz
+https://ftp.gnu.org/gnu/gcc/gcc-13.2.0/gcc-13.2.0.tar.xz
+https://downloads.uclibc-ng.org/releases/1.0.50/uClibc-ng-1.0.50.tar.xz
+https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.64.tar.xz
+https://www.busybox.net/downloads/busybox-1.37.0.tar.bz2
+
+Also don't forget to install the following packages:
+- curl (for downloading)
+- xz (for unpacking)
+- make
+- gcc
+- mpfr-devel
+- gmp-devel
+- libmpc-devel
+- texinfo
+- ncurses-devel
+- elfutils-devel
+
+I find the following directory structure to be ideal:
+/usr/x86_64-linux-uclibc/sysroot -> sysroot
+/usr/x86_64-linux-uclibc/tools -> prefix of binutils and gcc
+/usr/src -> sources
+/usr/src/build -> build directories for binutils and gcc (run configure from there) (this is even strongly recommended for gcc)
+
+I also prefer doing this in a fresh Void rootfs that I chroot into, since it makes cleaning up stuff easier (just rm -r rootfs/ and you're done).
+
+Install Linux headers first:
+	make defconfig
+	make INSTALL_HDR_PATH=/usr/x86_64-linux-uclibc/sysroot/usr headers_install
+
+Binutils:
+	cd /usr/src/build/binutils
+	../../binutils-2.43.1/configure \
+		--target=x86_64-linux-uclibc \
+		--enable-languages=c \
+		--prefix=/usr/x86_64-linux-uclibc/tools/binutils \
+		--disable-shared \
+		--without-newlib \
+		--disable-libgomp \
+		--with-sysroot=/usr/x86_64-linux-uclibc/sysroot
+	make all-{binutils,gas,ld} -j4
+	make install-{binutils,gas,ld}
+
+GCC without libgcc:
+	cd /usr/src/build/gcc
+	../../gcc-13.2.0/configure \
+		--target=x86_64-linux-uclibc \
+		--disable-multilib \
+		--enable-languages=c \
+		--prefix=/usr/x86_64-linux-uclibc/tools/gcc \
+		--without-headers \
+		--disable-shared \	# important! ld will complain during the compilation phase 
+		\					# about crti.o and friends not existing in the sysroot if
+		\					# shared is enabled. These only appear after compiling the
+		\					# libc
+		--disable-libssp \
+		--disable-libmudflap \
+		--without-newlib \
+		--disable-libgomp \
+		--with-sysroot=/usr/x86_64-linux-uclibc/sysroot
+	make all-gcc -j4
+	make install-gcc
+
+uClibc-ng headers:
+	cp uclibc-ng.config /usr/src/uClibc-ng-1.0.50
+	cd /usr/src/uClibc-ng-1.0.50
+	make install_headers
+
+Build libgcc:
+	cd /usr/src/build/gcc
+	make all-target-libgcc -j4
+	make install-target-libgcc
+
+Build uClibc:
+	cd /usr/src/uClibc-ng-1.0.50
+	make -j4
+	make install
+
+Finally, build BusyBox:
+	cp busybox-uclibc.config /usr/src/busybox-1.37.0
+	cd /usr/src/busybox-1.37.0
+	make -j4
+
+And there you have it! If everything runs successfully (which it should if you use these versions and don't forget to install some package), you'll find your stripped, static busybox binary in /usr/src/busybox-1.37.0. Copy it to wherever you need it to be, create all links in $(busybox --list), and enjoy! :D
+
+In my particular case, the final binary was about 511 KB.
+
+See also:
+https://foss-for-synopsys-dwc-arc-processors.github.io/toolchain/maintainer/manual-build.html#uclibc-toolchain
