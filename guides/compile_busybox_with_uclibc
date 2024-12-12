@@ -99,3 +99,6 @@ In my particular case, the final binary was about 511 KB.
 
 See also:
 https://foss-for-synopsys-dwc-arc-processors.github.io/toolchain/maintainer/manual-build.html#uclibc-toolchain
+
+UPDATE:
+If you really are going through all this for the sake of making the binary as small as possible, then go with musl instead. I recompiled busybox using a musl toolchain built with musl-cross-make, and the resulting binary was 466 KB. It was also quicker and required a lot less effort in comparison to the method described in this document.
