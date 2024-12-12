@@ -1,8 +1,8 @@
 # /etc/bash/bashrc.d/color.sh
 
-alias ls='ls --color --group-directories-first'
-alias grep='grep --color'
-alias diff='diff --color'
+alias ls='ls --color=auto --group-directories-first'
+alias grep='grep --color=auto'
+alias diff='diff --color=auto'
 
 C1='\[\e[38;5;130m\]'
 C2='\[\e[38;5;84m\]'
