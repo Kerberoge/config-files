@@ -50,6 +50,7 @@ Binutils:
 		--with-sysroot=/usr/x86_64-linux-uclibc/sysroot
 	make all-{binutils,gas,ld} -j4
 	make install-{binutils,gas,ld}
+	ln -s /usr/x86_64-linux-uclibc/tools/binutils/bin/* /usr/local/bin
 
 GCC without libgcc:
 	cd /usr/src/build/gcc
@@ -70,6 +71,7 @@ GCC without libgcc:
 		--with-sysroot=/usr/x86_64-linux-uclibc/sysroot
 	make all-gcc -j4
 	make install-gcc
+	ln -s /usr/x86_64-linux-uclibc/tools/gcc/bin/* /usr/local/bin
 
 uClibc-ng headers:
 	cp uclibc-ng.config /usr/src/uClibc-ng-1.0.50
