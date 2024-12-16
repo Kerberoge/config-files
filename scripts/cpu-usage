@@ -1,0 +1,18 @@
+#!/bin/bash
+
+IFS=' '
+
+while true; do
+	sleep 1
+	read dummy curr_user curr_nice curr_system curr_idle dummy < /proc/stat
+	((curr_total = curr_user + curr_nice + curr_system + curr_idle))
+	((diff_idle = curr_idle - prev_idle))
+	((diff_total = curr_total - prev_total))
+	for i in user nice system idle total; do
+		val=curr_$i
+		((prev_$i = ${!val}))
+	done
+	((usage = (diff_total - diff_idle) * 1000000 / (diff_total + 1)))
+	usage="$(printf "%06d" $usage)"
+	echo ${usage:0:-4}.${usage: -3:-2}%
+done
