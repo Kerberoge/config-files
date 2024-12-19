@@ -1,0 +1,22 @@
+#!/bin/bash
+
+die() {
+	echo "$@"
+	exit 1
+}
+
+[[ -n $1 ]] || die "Usage: ${0##*/} DIRECTORY"
+dir=$1
+[[ -r $dir ]] || die "${0##*/}: $dir: could not read directory contents"
+
+total=$(ls $dir | wc -l)
+i=1
+
+for file in $dir/*; do
+	date=$(exiftool $file |
+		grep -m1 "Create Date" |
+		sed -Ee 's/.*: //' -e 's/://g' -e 's/ /-/');
+	echo $i/$total ${file##*/};
+	((i++));
+	mv $file ${file%/*}/${date}_${file##*/};
+done
