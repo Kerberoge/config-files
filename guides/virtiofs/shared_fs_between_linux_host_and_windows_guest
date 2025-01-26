@@ -1,0 +1,32 @@
+This is a guide on how to setup virtiofs to create a shared filesystem between a Linux host and a Windows guest. No libvirt is used in this guide; instead, we invoke qemu directly with a command line.
+
+The setup consist of two parts, to be installed in the host and in the guest respectively.
+For the host, the following modifications are required:
+- Installing virtiofsd
+- Enabling the following namespaces in the Linux kernel configuration: USER_NS, PID_NS, NET_NS
+- Adding the following code to the qemu invocation script:
+	- Add this before you run qemu-system-x86_64:
+		(
+			/usr/libexec/virtiofsd \
+				--socket-path=/run/user/1000/virtiofsd \
+				--shared-dir=$HOME/virt/shared \
+				--cache=always >/dev/null 2>&1
+			rm /run/user/1000/virtiofsd*
+		) &
+	- Add these options to your qemu command:
+		-chardev socket,id=char0,path=/run/user/1000/virtiofsd \
+		-device vhost-user-fs-pci,queue-size=1024,chardev=char0,tag=Shared \
+		-object memory-backend-file,id=mem,size=4G,mem-path=/dev/shm,share=on \
+		-numa node,memdev=mem \
+- Enlarging your /dev/shm virtual filesystem. By default, it is half the size of the total amount of memory. On a system with 8GB, this amounts to 4GB. However, in the options above 4GB of memory are allocated for the VM in /dev/shm, because this is how much memory the VM has and the memory backend file needs to be as large as the VM's RAM. This means that the VM will consume all of the space in /dev/shm, meaning there will be no more space left for other programs that also need to create shared memory. Your system might freeze. To prevent this, the size of the /dev/shm filesystem needs to be increased to, for example, 8GB. This can be done by adding the mount option 'size=8G' or 'size=100%' (assuming you have 8GB of memory) to the command that mounts /dev/shm on boot.
+
+These modifications are required for the guest:
+- Installing WinFsp
+- Installing the necessary driver from the virtio-win iso file
+- Copying the virtiofs.exe binary from the iso file to some location on the disk, e.g. the installation directory of WinFsp
+- Creating and enabling the virtiofs service (See the online guide below)
+
+See also:
+https://virtio-fs.gitlab.io/howto-qemu.html (setting up virtiofs on the host)
+https://virtio-fs.gitlab.io/howto-windows.html (installing virtiofs in the guest)
+https://winfsp.dev/rel/ (WinFsp download page)
