@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# ffmpeg script to trim out unwanted segments from a recorded TV show.
+
+infile=in.mkv
+outfile=out.mp4
+
+start=00:33.981
+end=51:33.027
+com_start=23:50.929
+com_end=30:41.577
+
+# Timestamps in complex filtergraphs should be enclosed between single
+# quotes, and their colons need to be escaped.
+# See https://superuser.com/questions/1061274/ffmpeg-time-format-in-filter-complex.
+for i in start end com_start com_end; do
+	declare $i=\'${!i//:/\\:}\'
+done
+
+ffmpeg \
+	-i $infile \
+	-filter_complex \
+	"[0:v]trim=start=$start:end=$com_start,setpts=PTS-STARTPTS[av]; \
+	[0:a]atrim=start=$start:end=$com_start,asetpts=PTS-STARTPTS[aa]; \
+	[0:v]trim=start=$com_end:end=$end,setpts=PTS-STARTPTS[bv]; \
+	[0:a]atrim=start=$com_end:end=$end,asetpts=PTS-STARTPTS[ba]; \
+	[av][aa][bv][ba]concat=a=1[outv][outa]" \
+	-map [outv] -map [outa] \
+	$outfile
