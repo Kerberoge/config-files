@@ -13,7 +13,7 @@ if [ $(whoami) = "root" ]; then
 
 	[ -e $file ] || touch $file
 	ownership=$(stat -c "%u:%g" $file)
-	cp --preserve=mode $file $tmpfile
+	cp --preserve=mode,timestamps $file $tmpfile
 
 	chown $SVIM_USER $tmpfile
 	su $SVIM_USER -c "nvim $tmpfile"
