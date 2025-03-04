@@ -1,9 +1,23 @@
 #!/bin/bash
 
+# GTK
 if [[ $(gsettings get org.gnome.desktop.interface gtk-theme) == "'Adwaita'" ]]; then
-	gsettings set org.gnome.desktop.interface gtk-theme 'Nordic-bluish-accent'
-	gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
+	gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
 else
 	gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita'
-	gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Light'
 fi
+
+# foot
+fg=$(grep background ~/.config/foot/foot.ini | cut -d= -f2)
+bg=$(grep foreground ~/.config/foot/foot.ini | cut -d= -f2)
+
+sed -i "s/foreground=[0-9a-f]*/foreground=$fg/" ~/.config/foot/foot.ini
+sed -i "s/background=[0-9a-f]*/background=$bg/" ~/.config/foot/foot.ini
+
+for p in /dev/pts/[0-9]*; do
+	echo -ne "\e]10;#$fg\a" > $p
+	echo -ne "\e]11;#$bg\a" > $p
+done
+
+# neovim
+pkill -USR1 nvim
