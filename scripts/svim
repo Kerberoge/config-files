@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Edit root files with nvim running as a normal user.
+
+if [ $# -eq 0 -o ! -f $1 ]; then
+	echo "usage: ${0##*/} [FILE]"
+	exit 1
+fi
+
+if [ $(whoami) = "root" ]; then
+	file=$1
+	tmpfile=$(mktemp /tmp/XXXXXXXXXX.${file##*/}) # Preserve file extension
+
+	[ -e $file ] || touch $file
+	ownership=$(stat -c "%u:%g" $file)
+	cp --preserve=mode $file $tmpfile
+
+	chown $SVIM_USER $tmpfile
+	su $SVIM_USER -c "nvim $tmpfile"
+	
+	mv $tmpfile $file
+	chown $ownership $file
+else
+	export SVIM_USER=$(whoami)
+	exec doas $0 $1
+fi
