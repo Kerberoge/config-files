@@ -1,3 +1,0 @@
-alias fastfetch='fastfetch --logo-color-2 "38;5;8"'
-
-export EDITOR=nvim
