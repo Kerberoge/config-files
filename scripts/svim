@@ -2,7 +2,7 @@
 
 # Edit root files with nvim running as a normal user.
 
-if [ $# -eq 0 -o ! -f $1 ]; then
+if [ $# -eq 0 -o -z "$1" ]; then
 	echo "usage: ${0##*/} [FILE]"
 	exit 1
 fi
