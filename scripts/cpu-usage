@@ -14,5 +14,6 @@ while true; do
 	done
 	((usage = (diff_total - diff_idle) * 1000000 / (diff_total + 1)))
 	usage="$(printf "%06d" $usage)"
-	echo ${usage:0:-4}.${usage: -3:-2}%
+	printf "\e[1K\r"
+	printf "${usage:0:-4}.${usage: -3:-2}%%"
 done
