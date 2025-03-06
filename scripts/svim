@@ -9,17 +9,19 @@ fi
 
 if [ $(whoami) = "root" ]; then
 	file=$1
-	tmpfile=$(mktemp /tmp/XXXXXXXXXX.${file##*/}) # Preserve file extension
+	tmpdir=$(mktemp -d /tmp/svim-XXXXXXXXXX) # Copy to dir to preserve file name
+	tmpfile=$tmpdir/${file##*/}
 
 	[ -e $file ] || touch $file
 	ownership=$(stat -c "%u:%g" $file)
 	cp --preserve=mode,timestamps $file $tmpfile
 
-	chown $SVIM_USER $tmpfile
+	chown $SVIM_USER $tmpdir $tmpfile
 	su $SVIM_USER -c "nvim $tmpfile"
 	
 	mv $tmpfile $file
 	chown $ownership $file
+	rmdir $tmpdir
 else
 	export SVIM_USER=$(whoami)
 	exec doas $0 $1
