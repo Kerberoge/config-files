@@ -1,0 +1,48 @@
+#!/bin/bash
+
+IFS=$'\n'
+
+lines=$(for file in $(find . -type f); do
+	echo ${file##*/}
+done | sort)
+lines_uniq=$(uniq <<< $lines)
+diff=$(comm -23 <(echo "$lines") <(echo "$lines_uniq") | uniq)
+
+nitems=$(wc -l <<< $diff)
+n=1
+PS3="Select which file to keep: "
+for file in $diff; do
+	choices=()
+	for dup in $(find . -name $file); do
+		ls_size=$(ls -lh $dup | awk '{print $5}')
+		du_size=$(du -h $dup | awk '{print $1}')
+		choices+=( $(echo -e "$dup\t$ls_size\t$du_size") )
+	done
+	choices+=("all")
+
+	echo "Item $n/$nitems"
+	select choice in ${choices[@]}; do
+		echo
+		if [[ $choice == "all" ]]; then
+			echo "Keeping all files"
+		else
+			name=${choice%%$'\t'*}
+			to_delete+=( $(for c in ${choices[@]}; do echo $c; done |
+				grep -v "all\|$choice" | cut -d$'\t' -f1) )
+			echo "Keeping $name"
+		fi
+		break
+	done
+	echo
+	n=$((n + 1))
+done
+
+echo "About to delete the following files:"
+for d in ${to_delete[@]}; do echo $d; done
+read -rp "Are you sure? (y/n) " response
+if [[ $response == "y" ]]; then
+	for d in ${to_delete[@]}; do
+		echo "Deleting $d"
+		rm $d
+	done
+fi
