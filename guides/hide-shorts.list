@@ -1,0 +1,16 @@
+! uBlock Origin filter for hiding Youtube Shorts on Firefox Mobile.
+
+! Hide recommended shorts on the home page
+m.youtube.com##.rich-section-content
+
+! Remove "Shorts" button on the bottom panel on the home page
+m.youtube.com##ytm-pivot-bar-item-renderer:has(.pivot-shorts)
+
+! Hide shorts shelf from search results and from the related content section when watching a video
+m.youtube.com##ytm-reel-shelf-renderer
+
+! Also hide double lines
+m.youtube.com##ytm-item-section-renderer:has(lazy-list:has(ad-slot-renderer:only-child, ytm-reel-shelf-renderer:only-child))
+
+! Hide videos with "Shorts" overlay in the bottom right corner
+m.youtube.com##ytm-video-with-context-renderer:has(ytm-media-item.big-shorts-singleton)
