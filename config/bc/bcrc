@@ -1,0 +1,25 @@
+pi=a(1)*4
+
+define atan(x) {
+	return a(x)
+}
+
+define asin(x) {
+	if (x == 1)
+		return 1/2 * pi
+
+	if (x == -1)
+		return -1/2 * pi
+
+	return a(x/sqrt(1-x^2))
+}
+
+define acos(x) {
+	if (x == 0)
+		return 1/2 * pi
+
+	if (x < 0)
+		return pi + a(sqrt(1-x^2)/x)
+
+	return a(sqrt(1-x^2)/x)
+}
