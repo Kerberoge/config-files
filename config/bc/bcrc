@@ -1,5 +1,17 @@
 pi=a(1)*4
 
+define sin(x) {
+	return s(x)
+}
+
+define cos(x) {
+	return c(x)
+}
+
+define tan(x) {
+	return sin(x) / cos(x)
+}
+
 define atan(x) {
 	return a(x)
 }
