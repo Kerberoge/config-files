@@ -1,0 +1,62 @@
+#!/bin/sh
+
+rootfs_url=https://repo-default.voidlinux.org/live/current/void-x86_64-ROOTFS-20250202.tar.xz
+rootfs_archive=void.tar.xz
+rootfs_dir=build-rootfs
+packages="curl git"
+
+msg() {
+	echo -e "\e[1m${@}\e[0m"
+}
+
+die() {
+	echo -e "\e[1;31m${@}\e[0m"
+	exit 1
+}
+
+[ $(whoami) = "root" ] || die "Script needs to be run as root!"
+
+if [ -d $rootfs_dir ]; then
+	msg "Cleaning up existing rootfs..."
+	cd $rootfs_dir
+	ls | grep -vx build | xargs rm -rf
+	cd - > /dev/null
+fi
+
+if [ ! -f $rootfs_archive ]; then
+	msg "Downloading rootfs..."
+	curl -L $rootfs_url -o $rootfs_archive
+fi
+
+msg "Extracting rootfs..."
+mkdir -p $rootfs_dir
+tar -xf $rootfs_archive -C $rootfs_dir
+
+msg "Creating necessary files..."
+cp /etc/resolv.conf $rootfs_dir/etc
+mkdir -p $rootfs_dir/build/{repo,src}
+ln -s /build/repo $rootfs_dir/var/cache/xbps
+cat > $rootfs_dir/root/.bashrc <<-EOF
+	alias ls='ls --color'
+	export PS1='\[\e[1;38;5;3m\]build-chroot \[\e[1;38;5;4m\]\w \[\e[0m\]\\$ '
+EOF
+cat > $rootfs_dir/enter-chroot <<-EOF
+	#!/bin/sh
+
+	mount -t proc none $rootfs_dir/proc
+	mount -t sysfs none $rootfs_dir/sys
+	mount --rbind /dev $rootfs_dir/dev
+	chroot $rootfs_dir bash \$1
+	umount -R $rootfs_dir/{proc,sys,dev}
+EOF
+chmod +x $rootfs_dir/enter-chroot
+
+msg "Installing packages..."
+$rootfs_dir/enter-chroot <<-EOF
+	xbps-install -Suy xbps
+	xbps-install -uy
+	xbps-install -y $packages
+EOF
+
+msg "Entering chroot..."
+$rootfs_dir/enter-chroot
