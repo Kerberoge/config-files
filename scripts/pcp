@@ -1,0 +1,69 @@
+#!/bin/sh
+
+usage() {
+	printf "%s\n" \
+		"Usage: $(basename $0) [option] <source> <dest|directory>" \
+		"Possible options:" \
+		"  -L        always follow symbolic links"
+	exit 1
+}
+
+die() {
+	echo "$(basename $0): $@"
+	exit 1
+}
+
+follow_links=false
+user=$(whoami)
+minsize=$((512*1024))
+
+while getopts ":hL" opt; do
+	case $opt in
+		h) usage ;;
+		L) follow_links=true ;;
+		?) echo "Invalid option: -$OPTARG"; usage ;;
+	esac
+done
+shift $((OPTIND - 1))
+
+[ $# -lt 2 ] && usage
+
+# obtain destination from last argument
+# see https://stackoverflow.com/a/1853993
+for dest; do true; done
+
+if [ $# -gt 2 ]; then
+	# last argument must be a writeable dir
+	[ -e $dest ] || die "$dest: No such directory"
+	[ -d $dest ] || die "$dest: Not a directory"
+	[ -w $dest ] || die "$dest: Directory not writeable"
+fi
+
+while [ $# -gt 1 ]; do
+	if [ -d $dest ]; then
+		destpath=$dest/$(basename $1)
+	else
+		destpath=$dest
+	fi
+
+	echo "$1"
+	if [ -h $1 -a $follow_links = "false" ]; then
+		# symlink
+		cp -P $1 $destpath
+	elif [ -d $1 ]; then
+		# directory
+		[ $follow_links = "true" ] && tar_opts="-h"
+		size=$(du -s --block-size=1 $1 | awk '{print $1}')
+		mkdir -p $destpath
+		tar -C $1 -c $tar_opts . | pv -D1 -s $size | tar -C $destpath -x
+	else
+		# file
+		pv -D1 $1 > $destpath
+	fi
+
+	# symlinks do not have a mode
+	[ ! -h $destpath ] && chmod $(stat $1 | sed -n 's/Access: (\([0-9]*\).*/\1/p') $destpath
+	[ $user = "root" ] && chown $(ls -l $1 | awk '{printf("%s:%s", $3, $4)}') $destpath
+
+	shift
+done
