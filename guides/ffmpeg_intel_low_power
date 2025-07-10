@@ -1,0 +1,14 @@
+This is a guide on how to enable low-power hardware-accelerated encoding/decoding on the iGPU of an Intel Pentium 4415U.
+
+1. Copy i915/kbl_guc_70.1.1.bin and i915/kbl_huc_4.0.0.bin from linux-firmware to /lib/firmware
+2. Add these two files to CONFIG_EXTRA_FIRMWARE
+3. Add "i915.enable_guc=2" to kernel cmdline
+4. Enable CONFIG_DRM_I915_DEBUG_GUC and CONFIG_DEBUG_FS to check whether it's working later on
+5. Recompile & reboot
+6. Check contents of /sys/kernel/debug/dri/0/i915_{guc,huc}_load_status or similar files to find out if GuC/HuC firmware was loaded successfully (see link 1 at bottom of page)
+
+To encode in low power mode, add "-low_power 1" to your ffmpeg command (link 2). The Render/3D utilization in intel_gpu_top should be really low and only Video should be high (last page of link 1).
+
+See also:
+1. https://cdrdv2-public.intel.com/609249/609249-final-enabling-intel-guc-huc-advanced-gpu-features-v1-1-1.pdf
+2. https://trac.ffmpeg.org/wiki/Hardware/VAAPI#Mappingoptionsfromlibx264
