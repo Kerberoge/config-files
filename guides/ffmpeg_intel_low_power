@@ -7,6 +7,8 @@ This is a guide on how to enable low-power hardware-accelerated encoding/decodin
 5. Recompile & reboot
 6. Check contents of /sys/kernel/debug/dri/0/i915_{guc,huc}_load_status or similar files to find out if GuC/HuC firmware was loaded successfully (see link 1 at bottom of page)
 
+Optional: if you're on Void Linux, you need to manually rebuild intel-media-driver with the nonfree flag enabled (it's disabled by default).
+
 To encode in low power mode, add "-low_power 1" to your ffmpeg command (link 2). The Render/3D utilization in intel_gpu_top should be really low and only Video should be high (last page of link 1).
 
 See also:
