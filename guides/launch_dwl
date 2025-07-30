@@ -1,0 +1,4 @@
+Place the following inside the if statement in ~/.bash_profile:
+
+cmd="exec dwl < <(status-line) >/dev/null 2>&1"
+exec dbus-run-session sh -c "$cmd" >/dev/null 2>&1
