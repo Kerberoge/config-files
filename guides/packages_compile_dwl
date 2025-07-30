@@ -1,0 +1,8 @@
+pkg-config
+wayland-devel
+wayland-protocols
+libinput-devel
+eudev-libudev-devel
+libdrm-devel
+wlroots0.18-devel
+fcft-devel
