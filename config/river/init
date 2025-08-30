@@ -1,0 +1,96 @@
+#!/bin/sh
+
+# autostart
+swaybg -m fill -i ~/wallpapers/void.png &
+pipewire &
+pipewire-pulse &
+wireplumber &
+waybar &
+
+# tiling
+riverctl spawn "rivertile -main-ratio 0.5 -view-padding 2 -outer-padding 2"
+riverctl output-layout rivertile
+riverctl default-attach-mode bottom
+
+# appearance
+riverctl border-width 				1
+riverctl border-color-unfocused		0x4d4d4d
+riverctl border-color-focused		0x65cd99
+riverctl border-color-urgent		0xff5050
+riverctl xcursor-theme				Adwaita 16
+
+# shortcuts
+map() { IFS=; riverctl map -repeat normal $@; }
+
+map Super+Shift q				exit
+map Super q						close
+map Super j						focus-view previous
+map Super k						focus-view next
+map Super+Shift j				swap previous
+map Super+Shift k				swap next
+map Super o						zoom
+map Super space					toggle-float
+map Super f						toggle-fullscreen
+map Super h						send-layout-cmd rivertile "main-ratio -0.1"
+map Super l						send-layout-cmd rivertile "main-ratio +0.1"
+map Super i						send-layout-cmd rivertile "main-count +1"
+map Super u						send-layout-cmd rivertile "main-count -1"
+map Super m						set-focused-tags $((1 << 0))
+map Super comma					set-focused-tags $((1 << 1))
+map Super period				set-focused-tags $((1 << 2))
+map Super slash					set-focused-tags $((1 << 3))
+map Super tab					focus-previous-tags
+map Super+Shift m				set-view-tags $((1 << 0))
+map Super+Shift comma			set-view-tags $((1 << 1))
+map Super+Shift period			set-view-tags $((1 << 2))
+map Super+Shift slash			set-view-tags $((1 << 3))
+map Super+Control h				move left 20
+map Super+Control j				move down 20
+map Super+Control k				move up 20
+map Super+Control l				move right 20
+map Super+Alt h					resize horizontal -20
+map Super+Alt j					resize vertical 20
+map Super+Alt k					resize vertical -20
+map Super+Alt l					resize horizontal 20
+
+map None XF86MonBrightnessUp	spawn "brightnessctl set +5%"
+map None XF86MonBrightnessDown	spawn "brightnessctl set 5%-"
+map None XF86AudioMute			spawn "wpctl set-mute @DEFAULT_SINK@ toggle"
+map None XF86AudioRaiseVolume	spawn "wpctl set-volume @DEFAULT_SINK@ 5%+"
+map None XF86AudioLowerVolume	spawn "wpctl set-volume @DEFAULT_SINK@ 5%-"
+map Control space				spawn "playerctl play-pause"
+map None XF86Launch1			spawn "toggle-theme"
+map Super s						spawn "toggle-sleep-inhibition"
+riverctl map -release normal Super p spawn "wlr-randr --output eDP-1 --toggle"
+
+map Alt space					spawn "menu-desktop"
+map None Print					spawn "screenshot"
+map Super+Shift s				spawn "screenshot -r"
+map None XF86PowerOff			spawn "doas zzz"
+map Shift XF86PowerOff			spawn "doas ZZZ"
+map Super return				spawn "foot"
+map Super+Shift return			spawn "foot -a floating"
+map Super w						spawn "firefox"
+map Super e						spawn "foot nnn"
+map None XF86TouchpadToggle		spawn "foot -a bluetoothctl bluetoothctl"
+map None XF86WebCam				spawn "foot -a iwctl iwctl"
+map None XF86Calculator			spawn "foot -a calculator bc -lq ~/.config/bc/bcrc"
+
+# move/resize windows with pointer
+riverctl map-pointer normal Super BTN_LEFT move-view
+riverctl map-pointer normal Super BTN_RIGHT resize-view
+
+# rules
+riverctl rule-add -app-id floating		float
+riverctl rule-add -app-id bluetoothctl	float
+riverctl rule-add -app-id iwctl			float
+riverctl rule-add -app-id calculator	float
+
+# input config
+riverctl set-repeat 30 200
+
+touchpad=*_Touchpad
+riverctl input $touchpad tap enabled
+riverctl input $touchpad drag enabled
+riverctl input $touchpad natural-scroll enabled
+riverctl input $touchpad scroll-factor 0.3
