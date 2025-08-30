@@ -2,8 +2,8 @@
 
 rootfs_url=https://repo-default.voidlinux.org/live/current/void-x86_64-ROOTFS-20250202.tar.xz
 rootfs_archive=void.tar.xz
-rootfs_dir=build-rootfs
-packages="curl git"
+rootfs_dir=dwl-rootfs
+packages="curl git gcc"
 
 msg() {
 	echo -e "\e[1m${@}\e[0m"
@@ -40,14 +40,43 @@ cat > $rootfs_dir/root/.bashrc <<-EOF
 	alias ls='ls --color'
 	export PS1='\[\e[1;38;5;3m\]build-chroot \[\e[1;38;5;4m\]\w \[\e[0m\]\\$ '
 EOF
-cat > $rootfs_dir/enter-chroot <<-EOF
+cat > $rootfs_dir/enter-chroot <<-'EOF'
 	#!/bin/sh
+
+	export_file() {
+		mkdir -p $rootfs_dir/$(dirname $1)
+		touch $rootfs_dir/$1
+		mount --bind $1 $rootfs_dir/$1
+	}
+
+	unexport_file() {
+		umount $rootfs_dir/$1
+		rm $rootfs_dir/$1
+	}
+
+	rootfs_dir=$(dirname $0)
 
 	mount -t proc none $rootfs_dir/proc
 	mount -t sysfs none $rootfs_dir/sys
 	mount --rbind /dev $rootfs_dir/dev
-	chroot $rootfs_dir bash \$1
-	umount -R $rootfs_dir/{proc,sys,dev}
+
+	if [ -n "$WAYLAND_DISPLAY" -a -n "$XDG_RUNTIME_DIR" ]; then
+		wsock=$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY
+	fi
+	if [ -n "$DISPLAY" ]; then
+		xsock=/tmp/.X11-unix/X$(echo $DISPLAY | sed 's/://')
+	fi
+	[ -n "$wsock" ] && export_file $wsock
+	[ -n "$xsock" ] && export_file $xsock
+
+	chroot $rootfs_dir bash $1
+
+	[ -n "$wsock" ] && unexport_file $wsock
+	[ -n "$xsock" ] && unexport_file $xsock
+
+	for mnt in proc sys dev; do
+		umount -l $rootfs_dir/$mnt
+	done
 EOF
 chmod +x $rootfs_dir/enter-chroot
 
