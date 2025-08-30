@@ -1,0 +1,9 @@
+#!/bin/sh
+
+exec bemenu -i -p '' \
+	-H 18 --hp 20 \
+	--cw 2 --ch 14 \
+	--fn 'OpenSans SemiBold 9' \
+	--nf '#eeeeee' --af '#eeeeee' --ff '#eeeeee' \
+	--nb '#1d293d' --ab '#1d293d' --fb '#1d293d' --tb '#1d293d' --hb '#1d293d' \
+	--tf '#82abff' --hf '#82abff' $@
