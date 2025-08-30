@@ -1,0 +1,53 @@
+/* incomplete; problem: waybar buttons react very slowly when switching river tags */
+
+#waybar {
+	font-family: "DejaVu Sans Mono";
+	font-size: 14px;
+	color: #dddddd;
+	background: #1c1e1e;
+}
+
+.modules-right {
+	padding: 0 10px;
+}
+
+button {
+    padding: 0 0;
+	min-height: 0;
+    border: none;
+    border-radius: 0;
+    transition: none;
+	box-shadow: none;
+    text-shadow: none;
+}
+
+button:hover {
+	background: none;
+}
+
+#tags button {
+	padding: 0 4px;
+	color: #505050;
+}
+
+#tags button.occupied {
+	color: #dddddd;
+}
+
+#tags button.focused {
+	color: #dddddd;
+	background: #206141;
+}
+
+#tags button.urgent {
+	color: #ffffff;
+	background: #ff5050;
+}
+
+.warning {
+	color: #ffff50;
+}
+
+.critical, #network.disconnected {
+	color: #ff5050;
+}

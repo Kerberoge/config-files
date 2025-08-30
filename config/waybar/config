@@ -1,0 +1,61 @@
+{
+	"layer": "bottom",
+	"position": "top",
+	"spacing": 40,
+	"height": 18,
+
+	"modules-left": ["river/tags"],
+	"modules-right": ["pulseaudio", "memory", "cpu", "temperature", "battery", "network", "clock", "tray"],
+
+	"river/tags": {
+		"num-tags": 4,
+	},
+
+	"pulseaudio": {
+		"format": "<span color='#37bf7c'>V</span> {volume}%",
+		"format-muted": "<span color='#37bf7c'>V</span> muted",
+		"scroll-step": 0,
+    },
+
+	"memory": {
+		"interval": 1,
+		"format": "<span color='#37bf7c'>M</span> {used:0.1f}G",
+    },
+
+	"cpu": {
+		"interval": 1,
+		"format": "<span color='#37bf7c'>C</span> {usage:02}%",
+		"states": {
+			"warning": 90,
+			"critical": 95
+		},
+    },
+
+	"temperature": {
+		"interval": 1,
+		"hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+		"critical-threshold": 70,
+		"format": "<span color='#37bf7c'>T</span> {temperatureC}°C",
+	},
+
+    "battery": {
+		"format": "<span color='#37bf7c'>B</span> {capacity}%",
+		"format-charging": "<span color='#37bf7c'>Ch</span> {capacity}%",
+		"states": {
+			"warning": 15,
+			"critical": 10
+		},
+    },
+
+	"network": {
+		"interval": 1,
+		"interface": "wlo1",
+		"format": "<span color='#37bf7c'>W</span> {essid}",
+		"format-disconnected": "<span color='#37bf7c'>W</span> disconnected",
+    },
+
+	"clock": {
+		"interval": 1,
+		"format": "<span color='#37bf7c'>D</span> {:%a %d-%m  %H:%M}",
+	},
+}
